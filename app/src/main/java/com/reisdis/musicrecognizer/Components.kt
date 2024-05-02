@@ -20,11 +20,9 @@ import java.nio.file.WatchEvent
 
 @Composable
 fun CircularWaveButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isProcessing: Boolean
 ) {
-
-
-    var isProcessing by remember { mutableStateOf(false) }
 
 
     val transition = updateTransition(targetState = isProcessing, label = "MicButtonTransition")
@@ -51,11 +49,7 @@ fun CircularWaveButton(
             Column {
                 Spacer(Modifier.weight(1f))
                 IconButton(
-                    onClick = {
-                        isProcessing = !isProcessing
-                        onClick()
-
-                    },
+                    onClick = onClick,
                     modifier = Modifier
                         .size(160.dp)
                         .scale(scale)

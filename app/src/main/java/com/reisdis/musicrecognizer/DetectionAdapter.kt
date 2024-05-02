@@ -91,3 +91,61 @@ data class Artist(
 data class Genre(
     @Json(name = "name") val name: String
 )
+
+
+val dummyMusic = Music(
+    externalMetadata = ExternalMetadata(
+        musicbrainz = MusicBrainz(
+            track = Track(
+                id = "dummy_track_id"
+            )
+        ),
+        deezer = Deezer(
+            track = Track(
+                id = "dummy_track_id"
+            ),
+            artists = listOf(
+                Artist(name = "Artist Name")
+            ),
+            album = Album(name = "Album Name")
+        ),
+        spotify = Spotify(
+            track = Track(
+                id = "dummy_track_id"
+            ),
+            artists = listOf(
+                Artist(name = "Artist Name")
+            ),
+            album = Album(name = "Album Name")
+        ),
+        andyou = Andyou(
+            track = Track(
+                id = "dummy_track_id"
+            ),
+            artists = listOf(
+                Artist(name = "Artist Name")
+            ),
+            album = Album(name = "Album Name")
+        ),
+        youtube = Youtube(
+            vid = "dummy_video_id"
+        ),
+        syncpower = Syncpower(
+            track = Track(
+                id = "dummy_track_id"
+            ),
+            artists = listOf(
+                Artist(name = "Artist Name")
+            ),
+            album = Album(name = "Album Name")
+        )
+    ),
+    title = "Dummy Title",
+    album = Album(name = "Dummy Album"),
+    genres = listOf(
+        Genre(name = "Genre Name")
+    ),
+    artists = listOf(
+        Artist(name = "Artist Name")
+    )
+)

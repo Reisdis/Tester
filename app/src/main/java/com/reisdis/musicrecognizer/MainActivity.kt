@@ -9,12 +9,18 @@ import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -32,16 +38,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.reisdis.musicrecognizer.ui.theme.MusicRecognizerTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,6 +76,7 @@ class MainActivity : ComponentActivity() {
 fun RecordAudioScreen() {
     // Context needed for permission request
     val context = LocalContext.current
+    var isProcessing by remember { mutableStateOf(false) }
 
     // State to hold the result of the permission request
     var isMicPermissionGranted by remember { mutableStateOf(false) }
@@ -80,6 +92,7 @@ fun RecordAudioScreen() {
 
     val acrCloudManager = remember {
         ACRCloudManager(context) { result ->
+            isProcessing = false
             recognizedMusic = result.metadata.musics[0]
         }
     }
@@ -106,7 +119,8 @@ fun RecordAudioScreen() {
 
 
 
-    if (recognizedMusic != null) {
+    if (recognizedMusic == null) {
+
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -117,8 +131,14 @@ fun RecordAudioScreen() {
                     Spacer(Modifier.weight(1f))
                     CircularWaveButton(
                         onClick = {
-                            acrCloudManager.startRecognition()
-                        }
+                            requestPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                            if (isMicPermissionGranted) {
+                                isProcessing = true
+                                acrCloudManager.startRecognition()
+                            }
+                            else isProcessing = false
+                        },
+                        isProcessing
                     )
                     Spacer(Modifier.weight(1f))
                 }
@@ -127,61 +147,92 @@ fun RecordAudioScreen() {
         }
     } else {
         recognizedMusic?.let { music ->
-            AsyncImage(
-                model = albumArtUrl,
-                contentDescription = "Cover Art",
-                placeholder = painterResource(id = R.drawable.soundwave)
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .padding(8.dp)
-            ) {
-
-                Text("Recognition Result:", fontWeight = FontWeight.Bold)
-
-                Text("Title: ${music.title}")
-                Text("Album: ${music.album.name}")
-                Text("Genres: ${music.genres?.joinToString(", ") { it.name }}")
-                Text("Artists:")
-                music.artists.forEach { artist ->
-                    Text("  - ${artist.name}")
+            Column {
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surface,
+                                        Color.Transparent
+                                    ),
+                                    startY = 1000f,
+                                    endY = 500f // Adjust the end position of the gradient as needed
+                                )
+                            )
+                            .zIndex(1f)
+                    )
+                    // Add Image
+                    if (albumArtUrl.isNullOrEmpty()) {
+                        Image(
+                            painter = painterResource(R.drawable.soundwave),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .zIndex(0f)
+                        )
+                    } else {
+                        AsyncImage(
+                            model = albumArtUrl,
+                            contentDescription = "Cover Art",
+                            placeholder = painterResource(id = R.drawable.soundwave),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .zIndex(0f)
+                        )
+                    }
                 }
-                Text("External Metadata:")
-
-
-
-            }
-        }
-        Column {
-            Button(
-                onClick = {
-                    requestPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                Column(
+                    modifier = Modifier
+                        .offset(y = -50.dp)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = music.title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 40.sp, // Adjust the font size as needed
+                            lineHeight = 42.sp
+                        )
+                    )
+                    Text(
+                        text = "${music.artists.joinToString(", ") { it.name }} - ${music.album.name}",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 20.sp, // Adjust the font size as needed
+                            lineHeight = 26.sp
+                        )
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = {
+                                recognizedMusic = null
+                                isProcessing = false
+                                albumArtUrl = null
+                            }
+                        ) {
+                            Text(
+                                text = "Restart",
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
-            ) {
-                Text(text = "Request Mic Permission")
             }
-
-            Text(
-                text = "Microphone Permission Granted: $isMicPermissionGranted",
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
-            Button(
-                onClick = { if (isMicPermissionGranted) acrCloudManager.startRecognition() },
-                enabled = isMicPermissionGranted
-            ) {
-                Text(text = "Recognize")
-            }
-
-            // Display recognition result if available
-
         }
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     MusicRecognizerTheme {
