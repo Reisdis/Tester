@@ -11,6 +11,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,9 +21,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -116,11 +121,13 @@ fun RecordAudioScreen() {
     }
 
 
-
+    fun switchRecognitionState() {
+        isProcessing = !isProcessing
+        acrCloudManager.startRecognition()
+    }
 
 
     if (recognizedMusic == null) {
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -132,11 +139,7 @@ fun RecordAudioScreen() {
                     CircularWaveButton(
                         onClick = {
                             requestPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
-                            if (isMicPermissionGranted) {
-                                isProcessing = true
-                                acrCloudManager.startRecognition()
-                            }
-                            else isProcessing = false
+                            switchRecognitionState()
                         },
                         isProcessing
                     )
@@ -146,6 +149,7 @@ fun RecordAudioScreen() {
             }
         }
     } else {
+//        recognizedMusic = dummyMusic
         recognizedMusic?.let { music ->
             Column {
                 Box(
@@ -208,6 +212,63 @@ fun RecordAudioScreen() {
                             lineHeight = 26.sp
                         )
                     )
+                    Column(Modifier.padding(top = 40.dp)) {
+                        Text(text = "Available On:")
+                        music.externalMetadata.deezer?.let {
+                            Image(
+                                painter = painterResource(R.drawable.deezer),
+                                contentDescription = "Deezer",
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                                    .border(
+                                        width = 2.dp, // Stroke width
+                                        color = Color.Black, // Stroke color
+                                        shape = RoundedCornerShape(12.dp) // Shape of the border
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White)
+                                    .padding(horizontal = 12.dp)
+                                    .padding(vertical = 8.dp)
+                                    .height(15.dp)
+                            )
+                        }
+                        music.externalMetadata.youtube?.let {
+                            Image(
+                                painter = painterResource(R.drawable.youtube),
+                                contentDescription = "YT",
+                                modifier = Modifier
+                                    .padding(vertical = 2.dp)
+                                    .border(
+                                        width = 2.dp, // Stroke width
+                                        color = Color.Black, // Stroke color
+                                        shape = RoundedCornerShape(12.dp) // Shape of the border
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White)
+                                    .padding(horizontal = 12.dp)
+                                    .padding(vertical = 8.dp)
+                                    .height(18.dp)
+                            )
+                        }
+                        music.externalMetadata.spotify?.let {
+                            Image(
+                                painter = painterResource(R.drawable.spotify),
+                                contentDescription = "Spotify",
+                                modifier = Modifier
+                                    .padding(vertical = 2.dp)
+                                    .border(
+                                        width = 2.dp, // Stroke width
+                                        color = Color.Black, // Stroke color
+                                        shape = RoundedCornerShape(12.dp) // Shape of the border
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White)
+                                    .padding(horizontal = 12.dp)
+                                    .padding(vertical = 8.dp)
+                                    .height(20.dp)
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.weight(1f))
                     Row {
                         Spacer(modifier = Modifier.weight(1f))
