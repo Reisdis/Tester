@@ -116,14 +116,11 @@ fun RecordAudioScreen() {
 
                     Text("Title: ${music.title}")
                     Text("Album: ${music.album.name}")
-                    Text("Genres: ${music.genres.joinToString(", ") { it.name }}")
-                    Text("Score: ${music.score}")
-                    Text("Release Date: ${music.releaseDate}")
+                    Text("Genres: ${music.genres?.joinToString(", ") { it.name }}")
                     Text("Artists:")
                     music.artists.forEach { artist ->
                         Text("  - ${artist.name}")
                     }
-                    Text("Label: ${music.label}")
                     Text("External Metadata:")
                 }
 //                with(music.externalMetadata) {

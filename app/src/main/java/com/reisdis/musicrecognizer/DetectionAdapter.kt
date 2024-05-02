@@ -20,11 +20,8 @@ data class Music(
     // @Json(name = "external_metadata") val externalMetadata: ExternalMetadata,
     @Json(name = "title") val title: String,
     @Json(name = "album") val album: Album,
-    @Json(name = "genres") val genres: List<Genre>,
-    @Json(name = "score") val score: Int,
-    @Json(name = "release_date") val releaseDate: String,
+    @Json(name = "genres") val genres: List<Genre>?,
     @Json(name = "artists") val artists: List<Artist>,
-    @Json(name = "label") val label: String
 )
 
 data class ExternalMetadata(
