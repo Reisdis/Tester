@@ -104,29 +104,36 @@ fun RecordAudioScreen() {
         }
 
         // Display recognition result if available
-        recognitionResult?.let { result ->
+        recognitionResult?.metadata?.musics?.let { musics ->
             Column(
                 modifier = Modifier
                     .padding(top = 16.dp)
-                    .background(Color.LightGray)
                     .padding(8.dp)
             ) {
-                Text("Recognition Result:", fontWeight = FontWeight.Bold)
-                Text("Cost Time: ${result.costTime}")
-                Text("Status: ${result.status.msg}")
+                musics.forEach { music ->
 
-                // Display all songs, albums, and artists
-                result.metadata.humming.forEachIndexed { index, humming ->
-                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                        Text("Song ${index + 1}:", fontWeight = FontWeight.Bold)
-                        Text("Title: ${humming.title}")
-                        Text("Album: ${humming.album.name}")
-                        Text("Artists:")
-                        humming.artists.forEach { artist ->
-                            Text("  - ${artist.name}")
-                        }
+                    Text("Recognition Result:", fontWeight = FontWeight.Bold)
+
+                    Text("Title: ${music.title}")
+                    Text("Album: ${music.album.name}")
+                    Text("Genres: ${music.genres.joinToString(", ") { it.name }}")
+                    Text("Score: ${music.score}")
+                    Text("Release Date: ${music.releaseDate}")
+                    Text("Artists:")
+                    music.artists.forEach { artist ->
+                        Text("  - ${artist.name}")
                     }
+                    Text("Label: ${music.label}")
+                    Text("External Metadata:")
                 }
+//                with(music.externalMetadata) {
+//                    Text("  - MusicBrainz Track ID: ${musicbrainz.track.id}")
+//                    Text("  - Deezer Track ID: ${deezer.track.id}")
+//                    Text("  - Spotify Track ID: ${spotify.track.id}")
+//                    Text("  - Andyou Track ID: ${andyou.track.id}")
+//                    Text("  - Youtube Video ID: ${youtube.vid}")
+//                    Text("  - Syncpower Track ID: ${syncpower.track.id}")
+//                }
             }
         }
     }
