@@ -17,7 +17,7 @@ data class MetadataAdapter(
 
 @JsonClass(generateAdapter = true)
 data class Music(
-    // @Json(name = "external_metadata") val externalMetadata: ExternalMetadata,
+    @Json(name = "external_metadata") val externalMetadata: ExternalMetadata,
     @Json(name = "title") val title: String,
     @Json(name = "album") val album: Album,
     @Json(name = "genres") val genres: List<Genre>?,
@@ -25,12 +25,12 @@ data class Music(
 )
 
 data class ExternalMetadata(
-    @Json(name = "musicbrainz") val musicbrainz: MusicBrainz,
-    @Json(name = "deezer") val deezer: Deezer,
-    @Json(name = "spotify") val spotify: Spotify,
-    @Json(name = "andyou") val andyou: Andyou,
-    @Json(name = "youtube") val youtube: Youtube,
-    @Json(name = "syncpower") val syncpower: Syncpower
+    @Json(name = "musicbrainz") val musicbrainz: MusicBrainz? = null,
+    @Json(name = "deezer") val deezer: Deezer? = null,
+    @Json(name = "spotify") val spotify: Spotify? = null,
+    @Json(name = "andyou") val andyou: Andyou? = null,
+    @Json(name = "youtube") val youtube: Youtube? = null,
+    @Json(name = "syncpower") val syncpower: Syncpower? = null
 )
 
 @JsonClass(generateAdapter = true)

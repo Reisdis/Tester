@@ -67,7 +67,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
-
-
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(files("libs/acrcloud-universal-sdk-1.3.26.jar" ))
 }

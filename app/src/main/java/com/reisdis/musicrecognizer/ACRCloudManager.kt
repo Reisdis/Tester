@@ -35,7 +35,6 @@ class ACRCloudManager(private val context: Context, private val resultCallback: 
     fun startRecognition() {
         mClient?.let {
             if (it.startRecognize()) {
-                // Recognition started
             } else {
                 // Error initializing recognition
             }
