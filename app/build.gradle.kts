@@ -66,4 +66,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+
+
+    implementation(files("libs/acrcloud-universal-sdk-1.3.26.jar" ))
 }
